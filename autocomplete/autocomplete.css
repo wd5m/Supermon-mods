@@ -1,0 +1,15 @@
+/*
+   autocomplete.css
+   Author: David McAnally WD5M (Copyright) October 13, 2022
+   For ham radio use only, NOT for comercial use!
+   Based on examples from //jqueryui.com/autocomplete/
+   Created for use with Supermon 7.1+
+*/
+.ui-autocomplete {
+        min-height: 1.5em;
+        max-height: 50vmin;
+        max-width: 80vmax;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background-color: #bdd6ed;
+}
