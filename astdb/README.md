@@ -1,0 +1,1 @@
+The echolinkdb.php script was created for use with Supermon 7.1+ to add EchoLink nodes to the privatenodes.txt file and astdb.txt This script will scrape the EchoLink node tables from the www.echoLink.org/logins.jsp web page and output records in a format compatible with the Supermon privatenodes.txt file record format.
