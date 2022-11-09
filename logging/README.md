@@ -1,0 +1,1 @@
+These login/logout script modifications enable logging of login/logout/failure attempts to Supermon 7.1+. PHP provides a method to log to the Apache error log, but not to the access log. So I also include the PHP method to log to the Linux syslog if that is preferred.
