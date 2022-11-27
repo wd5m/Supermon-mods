@@ -10,8 +10,8 @@ $_SESSION['sm61loggedin'] = false;
 openlog("SUPERMON",LOG_ODELAY , LOG_LOCAL0);    // WD5M 20221107 - Log to Linux syslog
 if (http_authenticate($_POST['user'], $_POST['passwd'])) {
     print "Login succeeded.";
-    error_log($_POST['user'].' login succeeded.');      // WD5M 20221107 - Log to Apache error.log
-    syslog(LOG_INFO,$_POST['user'].' login succeeded.');        // WD5M 20221107 - Log to Linux syslog
+    error_log($_SERVER['REMOTE_ADDR'].' '.$_POST['user'].' login succeeded.');      // WD5M 20221107 - Log to Apache error.log
+    syslog(LOG_INFO,$_SERVER['REMOTE_ADDR'].' '.$_POST['user'].' login succeeded.');        // WD5M 20221107 - Log to Linux syslog
     $_SESSION['sm61loggedin'] = true;
     $_SESSION['user'] = $_POST['user']; // WD5M 20221107 - Log to Linux syslog
     $myvar1 = explode('/', $_SERVER['REQUEST_URI']);
@@ -20,8 +20,8 @@ if (http_authenticate($_POST['user'], $_POST['passwd'])) {
     print "<meta http-equiv='REFRESH' content='0;url='.$my_url'>";
 } else {
     print "Sorry, login failed.";
-    error_log($_POST['user'].' login failed.'); // WD5M 20221107 - Log to Linux syslog
-    syslog(LOG_NOTICE,$_POST['user'].' login failed.'); // WD5M 20221107 - Log to Linux syslog
+    error_log($_SERVER['REMOTE_ADDR'].' '.$_POST['user'].' login failed.'); // WD5M 20221107 - Log to Linux syslog
+    syslog(LOG_NOTICE,$_SERVER['REMOTE_ADDR'].' '.$_POST['user'].' login failed.'); // WD5M 20221107 - Log to Linux syslog
 }
 # print "<pre>"; print_r($_POST); print "</pre>";
 closelog();     // WD5M 20221107 - Log to Linux syslog
