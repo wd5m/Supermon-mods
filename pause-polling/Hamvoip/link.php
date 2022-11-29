@@ -107,7 +107,7 @@
 	// when DOM is ready
 	$(document).ready(function()
 	{
-		onLoad(); // initialize events for eventsource
+		onLoad(1); // initialize events for eventsource
 <?php
 	if (! empty($PAUSE_HIDDEN))
 	{
@@ -118,9 +118,9 @@
 	}
 ?>
 	}); // end of $(document).ready(function()
-	function onLoad()
+	function onLoad(firstLoad=0)
 	{
-		if(typeof(EventSource)!=="undefined" && !document.hidden)
+		if(typeof(EventSource)!=="undefined" && (!document.hidden || firstLoad == 1))
 		{
 			//console.log("opened");
 			// Start SSE
