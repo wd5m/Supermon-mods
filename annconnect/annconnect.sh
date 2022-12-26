@@ -1,35 +1,61 @@
 #!/bin/bash
-# annconnect.sh - WD5M
-# custom node connect/disconnect localplay announcements
-# call this script from supermon smlogger with arguments:
+# annconnect.sh - WD5M - December 2022
+# 20221226 - Updated to work from either connpgm/discpgm settings, or from smlogger script.
+#
+# This script provides a method to have custom node connect/disconnect localplay announcements
+# call this script from supermon smlogger with arguments
+# or configure rpt.conf settings for
+# connpgm=<directorypath>/annconnect.sh 1
+# discpgm=<directorypath>/annconnect.sh 0
+#
 # $1 - same as smlogger [0=disconnecting/1=connecting]
 # $2 - same as smlogger [local node]
 # $3 - same as smlogger [remote node]
-# $4 - node connection direction [IN/OUT] from $chkINOUT in smlogger
+# $4 - node connection direction [IN/OUT] from $chkINOUT in smlogger (optional)
 #
-# Example:  add this line to smlogger at bottom of script just before trap - exit...
+# smlogger example:  add this line to smlogger at bottom of script just before trap - exit...
 # [ -x /usr/local/sbin/supermon/annconnect.sh ] && /usr/local/sbin/supermon/annconnect.sh "${@}" "${chkINOUT}" &
 # Note the trailing "&" runs the script in background.
 #
 declare -A IGN
-# Ignore these nodes...
-# uncomment and replace node number inside quotes
+# Ignore these nodes by uncommenting/replicating lines and 
+# placing node number to ignore inside quotes
 # replicate for each node you want to ignore
 # IGN['555550']=1
 # IGN['555551']=1
-# IGN['555552']=1
 
 Prgm=`basename $0`
 PID=$$
+SP="/var/lib/asterisk/sounds"
 N="${3,,}"
 [[ ${IGN[${N}]} == 1 ]] && exit 0	# Ignored node
-SP="/var/lib/asterisk/sounds"
-# [[ ${1} == 0 ]] && exit 0	# uncomment to silence disconnect announcements
-# [[ ${4} == "OUT" ]] && exit 0	# uncomment to silence outbound announcements
+# [[ ${1} == 0 ]] && exit 0	# uncomment to silence all disconnect announcements
+# [[ ${1} == 1 ]] && exit 0	# uncomment to silence all connect announcements
 [[ ${1} == 0 ]] && CD="${SP}/disconnected.gsm"
 [[ ${1} == 1 ]] && CD="${SP}/connected.gsm"
-[[ ${4} == "OUT" ]] && INOUT="${SP}/outbound.gsm"
-[[ ${4} == "IN" ]] && INOUT="${SP}/inbound.gsm"
+
+if [[ -n ${4} ]]
+then
+	chkINOUT=${4}
+else
+	declare -i LSWORDS=0
+	LSTAT=`/usr/sbin/asterisk -rx "rpt lstats $2" |grep ^"$3 "`
+	LSWORDS=`/usr/bin/wc -w <<< "$LSTAT"`
+	echo ${LSTAT}
+	echo ${LSWORDS}
+	if [[ ${LSWORDS} -eq 5 ]]
+	then
+		chkINOUT=`echo ${LSTAT} | /usr/bin/awk '{print $3}'`
+	elif [[ ${LSWORDS} -eq 6 ]]
+	then
+		chkINOUT=`echo ${LSTAT} | /usr/bin/awk '{print $4}'`
+	fi
+fi
+echo ${1} ${2} ${3} ${chkINOUT}
+# [[ ${chkINOUT} == "OUT" ]] && exit 0	# uncomment to silence all outbound announcements
+# [[ ${chkINOUT} == "IN" ]] && exit 0	# uncomment to silence all inbound announcements
+[[ ${chkINOUT} == "OUT" ]] && INOUT="${SP}/outbound.gsm"
+[[ ${chkINOUT} == "IN" ]] && INOUT="${SP}/inbound.gsm"
 re='^[0-9]+$'	# numberic regex test values
 rel='^[a-z\.\*\+\@\-]+$'	# letter character regex test values
 declare -i L
